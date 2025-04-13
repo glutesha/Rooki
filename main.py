@@ -69,13 +69,7 @@ hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
 
 words = ['СТУЛ', 'АГА', 'ЖЕЛЕЗО', 'Я', 'ТЫ', 'ДОМ', 'ЭРА', 'ПОТОМ', 'СИЛА', 'САДИЗМ', 'РЫБА', 'РАБОТА', 'ЮНГА', 'ДУБ', 'ПАПА', 'МАМА', 'МОНО', 'СТЕРЕО', 'ВИНИЛ', 'СТВОЛ', 'ТВ', 'ФУ', 'ЦЕНТ', 'ФУНТ', 'МИЛО', 'ФМ', 'РАДИО', 'СОДА', 'ЗУБ', 'ГАММА', 'СЬЕМ', 'ЁЖИК', 'КАША', 'ЮБКА', 'ВЪЕЗД']
-
-labels_dict = {0: 'А', 1: 'Б', 2: 'В', 3: 'Г', 4: 'Д', 5: 'Е', 6: 'Ж', 7: 'З', 8: 'И', 9: 'Л', 10: 'М', 11: 'Н', 12: 'О', 13: 'П', 14: 'Р', 15: 'С', 16: 'Т', 17: 'У', 18: 'Ф',  19: 'Ц',  20: 'Ч',  21: 'Ш', 22:'Ь', 23:'Ы', 24: 'Э', 25: 'Ю', 26: 'Я', 27: 'К', 28: 'К', 29:'Й', 30: 'Ъ', 31: 'Ь', 32: 'Х', 33: 'Ё'}
-predbin = {}
-
-for i in labels_dict:
-    predbin.update({labels_dict[i]: 0})
-
+labels =  {0: 'А', 1: 'Б', 2: 'В', 3: 'Г', 4: 'Д', 5: 'Е', 6: 'Ж', 7: 'З', 8: 'И', 9: 'Л', 10: 'М', 11: 'Н', 12: 'О', 13: 'П', 14: 'Р', 15: 'С', 16: 'Т', 17: 'У', 18: 'Ф',  19: 'Ц',  20: 'Ч',  21: 'Ш', 22:'Ь', 23:'Ы', 24: 'Э', 25: 'Ю', 26: 'Я', 27: 'К', 28: 'К', 29:'Й', 30: 'Ъ', 31: 'Ь', 32: 'Х', 33: 'Ё'}
 while settings: 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -129,6 +123,8 @@ WIDTH = 450
 
 screen = pygame.display.set_mode((HEIGHT, WIDTH))
 
+predicted_character = "?"
+ 
 while running: 
     try:
         clock.tick(FPS)
@@ -145,7 +141,7 @@ while running:
         
         results = hands.process(frame_rgb)
         if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
+            for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
                 mp_drawing.draw_landmarks(
                     frame,  # image to draw
                     hand_landmarks,  # model output
@@ -164,37 +160,27 @@ while running:
                 for i in range(len(hand_landmarks.landmark)):
                     x = hand_landmarks.landmark[i].x
                     y = hand_landmarks.landmark[i].y
-                    data_aux.append(x - min(x_))
-                    data_aux.append(y - min(y_))
+                    if handedness.classification[0].label == 'Left': 
+                        data_aux.append(x - min(x_))
+                        data_aux.append(y - min(y_))
 
             x1 = int(min(x_) * W) - 10
             y1 = int(min(y_) * H) - 10
 
             x2 = int(max(x_) * W) - 10
             y2 = int(max(y_) * H) - 10
+            
+            predicted_character = "?"
 
-            prediction = model.predict([np.asarray(data_aux)])
-
-            predicted_character = labels_dict[int(prediction[0])]
-
-        if chtick != 7:
-            chtick += 1
-            predbin[predicted_character] += 1
-        else:
-            chtick = 0
-
-            v = list(predbin.values())
-            k = list(predbin.keys())
-            character = k[v.index(max(v))]
-
-            chtick = 0
-
-            predbin = {}
-
-            for i in labels_dict:
-                predbin.update({labels_dict[i]: 0})
-                    
-
+            if len(data_aux) == 42:
+                prediction = model.predict_proba([np.asarray(data_aux)])
+                prediction = prediction[0]
+                maxpr = max(prediction)
+                index = np.argmax(prediction)
+                label_index = model.classes_[index]
+                if maxpr >= 0.25:
+                    predicted_character = labels[int(label_index)]
+                
         screen.fill((back)) 
 
         if oldmode:
@@ -210,7 +196,7 @@ while running:
             fra = pygame.transform.flip(fra, True, False) 
         screen.blit(fra, (0,0))
         pygame.draw.rect(screen, back, pygame.Rect(10, 10, 70, 75))
-        screen.blit(bigaboom.render(character, False, (text)), (12,0))
+        screen.blit(bigaboom.render(predicted_character, False, (text)), (12,0))
         
                          
         for event in pygame.event.get():
@@ -280,7 +266,7 @@ while running:
                 back = green
                 pygame.mixer.music.load(".\data\yes.wav") 
                 pygame.mixer.music.play()
-                letter = labels_dict[randint(0, 33)]
+                letter = labels[randint(0, 33)]
                 flag_pass = 0
                 score += 1
                 counter = 0
@@ -378,7 +364,7 @@ while running:
                 screen.blit(my_font.render(f'GAME OVER', False, (text)), (900,0))     
                 screen.blit(my_font.render(f'Очки: {str(score)}', False, (text)), (900,30))   
                 scene_counter += 1
-                lettersss = list(labels_dict.values())
+                lettersss = list(labels.values())
                 
                 try:
                     letfps = vid.get(cv2.CAP_PROP_FPS)
@@ -422,7 +408,7 @@ while running:
                 back = green
                 pygame.mixer.music.load(".\data\yes.wav") 
                 pygame.mixer.music.play()
-                letter = labels_dict[randint(0, 33)]
+                letter = labels[randint(0, 33)]
                 flag_pass = 0
                 score += 1
                 counter = 0
@@ -442,7 +428,7 @@ while running:
                 letterbin.append(character)
                 screen.blit(my_font.render(f'Очки: {str(score)}', False, (text)), (900,30))   
                 scene_counter += 1
-                lettersss = list(labels_dict.values())
+                lettersss = list(labels.values())
                 try:
                     letfps = vid.get(cv2.CAP_PROP_FPS)
                     success, video_image = vid.read()
@@ -463,7 +449,7 @@ while running:
         pygame.display.flip()             
     except Exception as e:
         pass
-
+        
 pygame.quit()
 
 
