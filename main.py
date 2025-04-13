@@ -70,6 +70,13 @@ hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
 words = ['СТУЛ', 'АГА', 'ЖЕЛЕЗО', 'Я', 'ТЫ', 'ДОМ', 'ЭРА', 'ПОТОМ', 'СИЛА', 'САДИЗМ', 'РЫБА', 'РАБОТА', 'ЮНГА', 'ДУБ', 'ПАПА', 'МАМА', 'МОНО', 'СТЕРЕО', 'ВИНИЛ', 'СТВОЛ', 'ТВ', 'ФУ', 'ЦЕНТ', 'ФУНТ', 'МИЛО', 'ФМ', 'РАДИО', 'СОДА', 'ЗУБ', 'ГАММА', 'СЬЕМ', 'ЁЖИК', 'КАША', 'ЮБКА', 'ВЪЕЗД']
 labels =  ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Ц', 'Ч', 'Ш', 'Ь', 'Ы', 'Э', 'Ю', 'Я', 'К', 'К', 'Й', 'Ъ', 'Ь', 'Х', 'Ё', 'Я', 'ТЫ', 'БЫЛО']
+
+predbin = {}
+
+for i in labels:
+    predbin.update({i: 0})
+
+
 while settings: 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -183,6 +190,24 @@ while running:
                 
         screen.fill((back)) 
 
+        if predicted_character != "?":
+            if chtick != 7:
+                chtick += 1
+                predbin[predicted_character] += 1
+            else:
+                chtick = 0
+
+                v = list(predbin.values())
+                k = list(predbin.keys())
+                character = k[v.index(max(v))]
+
+                chtick = 0
+
+                predbin = {}
+
+                for i in labels:
+                    predbin.update({i: 0})
+                
         if oldmode:
             frame_py = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame_py = np.rot90(frame_py)
@@ -195,7 +220,7 @@ while running:
         if not zerk:
             fra = pygame.transform.flip(fra, True, False) 
         screen.blit(fra, (0,0))
-        texts = bigaboom.render(predicted_character, False, text)
+        texts = bigaboom.render(character, False, text)
         texts_rect = texts.get_rect(topleft=(12, 0))
         pygame.draw.rect(screen, back, texts_rect)
         screen.blit(texts, texts_rect)
