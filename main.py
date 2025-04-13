@@ -69,13 +69,13 @@ hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
 
 words = ['СТУЛ', 'АГА', 'ЖЕЛЕЗО', 'Я', 'ТЫ', 'ДОМ', 'ЭРА', 'ПОТОМ', 'СИЛА', 'САДИЗМ', 'РЫБА', 'РАБОТА', 'ЮНГА', 'ДУБ', 'ПАПА', 'МАМА', 'МОНО', 'СТЕРЕО', 'ВИНИЛ', 'СТВОЛ', 'ТВ', 'ФУ', 'ЦЕНТ', 'ФУНТ', 'МИЛО', 'ФМ', 'РАДИО', 'СОДА', 'ЗУБ', 'ГАММА', 'СЬЕМ', 'ЁЖИК', 'КАША', 'ЮБКА', 'ВЪЕЗД']
-labels =  {0: 'А', 1: 'Б', 2: 'В', 3: 'Г', 4: 'Д', 5: 'Е', 6: 'Ж', 7: 'З', 8: 'И', 9: 'Л', 10: 'М', 11: 'Н', 12: 'О', 13: 'П', 14: 'Р', 15: 'С', 16: 'Т', 17: 'У', 18: 'Ф',  19: 'Ц',  20: 'Ч',  21: 'Ш', 22:'Ь', 23:'Ы', 24: 'Э', 25: 'Ю', 26: 'Я', 27: 'К', 28: 'К', 29:'Й', 30: 'Ъ', 31: 'Ь', 32: 'Х', 33: 'Ё'}
+labels =  ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Ц', 'Ч', 'Ш', 'Ь', 'Ы', 'Э', 'Ю', 'Я', 'К', 'К', 'Й', 'Ъ', 'Ь', 'Х', 'Ё', 'Я', 'ТЫ', 'БЫЛО']
 while settings: 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             settings = False
             running = True
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN: 
             match event.key:
                 case pygame.K_0:
                     camnum = 0
@@ -195,9 +195,10 @@ while running:
         if not zerk:
             fra = pygame.transform.flip(fra, True, False) 
         screen.blit(fra, (0,0))
-        pygame.draw.rect(screen, back, pygame.Rect(10, 10, 70, 75))
-        screen.blit(bigaboom.render(predicted_character, False, (text)), (12,0))
-        
+        texts = bigaboom.render(predicted_character, False, text)
+        texts_rect = texts.get_rect(topleft=(12, 0))
+        pygame.draw.rect(screen, back, texts_rect)
+        screen.blit(texts, texts_rect)
                          
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -448,6 +449,7 @@ while running:
 
         pygame.display.flip()             
     except Exception as e:
+        print(e)
         pass
         
 pygame.quit()
