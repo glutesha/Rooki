@@ -319,7 +319,7 @@ while running:
                     screen.blit(pygame.transform.scale(video_surf, (640, 480)), (640, 0))
                     if counter >= 500:
                         game_mode = 0
-                        pygame.mixer.music.load(".\data\yes.wav") 
+                        pygame.mixer.music.load("./data/yes.wav") 
                         pygame.mixer.music.play()   
                 except:
                     vid = cv2.VideoCapture(f"./data/{letter}.mp4")
@@ -353,7 +353,7 @@ while running:
                     counter = 0
 
             if flag_pass == 1:
-                pygame.mixer.music.load(".\data\yes.wav") 
+                pygame.mixer.music.load("./data/yes.wav") 
                 pygame.mixer.music.play()
                 back = green
                 if letf >= len(words[word]) - 1:
@@ -399,7 +399,7 @@ while running:
                     screen.blit(pygame.transform.scale(video_surf, (640, 480)), (640, 0))
                     if counter >= 500:
                         game_mode = 0
-                        pygame.mixer.music.load(".\data\yes.wav") 
+                        pygame.mixer.music.load("./data/yes.wav") 
                         pygame.mixer.music.play()   
                 except:
                     vid = cv2.VideoCapture(f"./data/{letter}.mp4")
@@ -432,7 +432,7 @@ while running:
 
             if flag_pass == 1:
                 back = green
-                pygame.mixer.music.load(".\data\yes.wav") 
+                pygame.mixer.music.load("./data/yes.wav") 
                 pygame.mixer.music.play()
                 letter = labels[randint(0, 33)]
                 flag_pass = 0
@@ -462,7 +462,7 @@ while running:
                     screen.blit(pygame.transform.scale(video_surf, (640, 480)), (640, 0))
                     if counter >= 500:
                         game_mode = 0
-                        pygame.mixer.music.load(".\data\yes.wav") 
+                        pygame.mixer.music.load("./data/yes.wav") 
                         pygame.mixer.music.play()   
                 except:
                     vid = cv2.VideoCapture(f"./data/{letter}.mp4")
