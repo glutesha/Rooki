@@ -390,7 +390,7 @@ while running:
                 screen.blit(my_font.render(f'GAME OVER', False, (text)), (900,0))     
                 screen.blit(my_font.render(f'Очки: {str(score)}', False, (text)), (900,30))   
                 scene_counter += 1
-                lettersss = list(labels.values())
+                lettersss = labels
                 
                 try:
                     letfps = vid.get(cv2.CAP_PROP_FPS)
@@ -454,7 +454,7 @@ while running:
                 letterbin.append(character)
                 screen.blit(my_font.render(f'Очки: {str(score)}', False, (text)), (900,30))   
                 scene_counter += 1
-                lettersss = list(labels.values())
+                lettersss = labels
                 try:
                     letfps = vid.get(cv2.CAP_PROP_FPS)
                     success, video_image = vid.read()
