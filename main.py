@@ -290,7 +290,7 @@ while running:
 
             if flag_pass == 1:
                 back = green
-                pygame.mixer.music.load(".\data\yes.wav") 
+                pygame.mixer.music.load("./data/yes.wav") 
                 pygame.mixer.music.play()
                 letter = labels[randint(0, 33)]
                 flag_pass = 0
